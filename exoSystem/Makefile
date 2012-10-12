@@ -4,7 +4,7 @@ tout:
 	make exPID
 	make exFork
 	make exSystem
-	make Semaphore
+	make exSemaphore
 
 ex1:
 	make exPID
