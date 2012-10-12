@@ -4,6 +4,7 @@ tout:
 	make exPID
 	make exFork
 	make exSystem
+	make Semaphore
 
 ex1:
 	make exPID
@@ -28,3 +29,9 @@ ex4:
 exSystem:
 	# Compile dans le dossier bin.
 	cd bin ; gcc -o exSystem ../sources/ex4System.c ; chmod +x exSystem 
+
+ex5:
+	make exSemaphore
+exSemaphore:
+	# Compile dans le dossier bin.
+	cd bin ; gcc -o exSemaphore ../sources/ex5Semaphore.c ; chmod +x exSystem 
