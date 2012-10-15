@@ -1,0 +1,29 @@
+Bonjour,
+Ce dossier est composé du pdf et des exemples.
+
+Dans les exemples, vous retrouverez deux dossier, bin et sources, ainsi qu'un fichier Makefile.
+Dans sources vous trouverez les .c
+Le Makefile vous permet de compiler simplement,dans un terminal utilisez la commande :
+
+//Pour tout compiler
+make all ou make tout
+
+//Pour compiler l'Exemple 1 sur les PID(s)
+make ex1 ou exPID
+
+//Pour compiler l'Exemple sur les Fork(s)
+make ex2 ou exFork
+
+//Pour compiler l'Exemple sur les Exec(s)
+make ex3 ou exExec
+
+//Pour compiler l'Exemple sur les System(s)
+make ex4 ou exSystem
+
+//Pour compiler l'Exemple sur les Semaphores
+make ex5 ou exSemaphore
+
+Les executables seront stockés dans le dossier bin
+
+
+Remi.
