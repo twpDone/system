@@ -1,79 +1,55 @@
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <pthread.h> 
+#include <semaphore.h> 
+#include <unistd.h> 
 
-//Programme exemple du man 
 
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <semaphore.h>
-#include <time.h>
-#include <assert.h>
-#include <errno.h>
-#include <signal.h>
+sem_t mutex;
 
-sem_t sem;
 
-#define handle_error(msg) \
-    do { perror(msg); exit(EXIT_FAILURE); } while (0)
-
-static void
-handler(int sig)
+void* affichage (void* name)
 {
-    write(STDOUT_FILENO, "sem_post() from handler\n", 24);
-    if (sem_post(&sem) == -1) {
-        write(STDERR_FILENO, "sem_post() failed\n", 18);
-        _exit(EXIT_FAILURE);
+    int i, j;
+    for(i = 0; i < 10; i++) {
+        sem_wait(&mutex); //Attendre la liberation 
+
+        for(j=0; j<5; j++) printf("%s ",(char*)name);
+
+        sched_yield(); // liberation du processuer sans se bloquer, pour etre sur d'avoir des problemes 
+
+        for(j=0; j<5; j++) printf("%s ",(char*)name);
+
+        printf("\n");
+
+        sem_post(&mutex); // Increment du semaphore
     }
+    return NULL;
+} 
+
+
+int main (void)
+{ 
+    pthread_t filsA, filsB;
+    
+    sem_init(&mutex, 0, 1);
+    printf("\n\nExemple : éviter un mélange des affichages réalisés par les deux threads.\n\n");	
+	printf("\n");
+    if (pthread_create(&filsA, NULL, affichage, "AA")) { 
+        perror("pthread_create"); 
+        exit(EXIT_FAILURE); 
+    } 
+    if (pthread_create(&filsB, NULL, affichage, "BB")) { 
+        perror("pthread_create"); 
+        exit(EXIT_FAILURE); 
+    } 
+	
+    if (pthread_join(filsA, NULL)) 
+        perror("pthread_join"); 
+	
+    if (pthread_join(filsB, NULL)) 
+        perror("pthread_join"); 
+	
+    printf("Fin du pere\n") ;
+    return (EXIT_SUCCESS);
 }
-
-int
-main(int argc, char *argv[])
-{
-    struct sigaction sa;
-    struct timespec ts;
-    int s;
-
-   if (argc != 3) {
-        fprintf(stderr, "Usage: %s <alarm-secs> <wait-secs>\n",
-                argv[0]);
-        exit(EXIT_FAILURE);
-    }
-
-   if (sem_init(&sem, 0, 0) == -1)
-        handle_error("sem_init");
-
-   /* Establish SIGALRM handler; set alarm timer using argv[1] */
-
-   sa.sa_handler = handler;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-    if (sigaction(SIGALRM, &sa, NULL) == -1)
-        handle_error("sigaction");
-
-   alarm(atoi(argv[1]));
-
-   /* Calculate relative interval as current time plus
-       number of seconds given argv[2] */
-
-
-  if (clock_gettime(CLOCK_REALTIME, &ts) == -1)
-       handle_error("clock_gettime");
-
-  ts.tv_sec += atoi(argv[2]);
-
-  printf("main() about to call sem_timedwait()\n");
-   while ((s = sem_timedwait(&sem, &ts)) == -1 && errno == EINTR)
-       continue;       // Restart if interrupted by handler 
-
-  // Check what happened 
-
-  if (s == -1) {
-       if (errno == ETIMEDOUT)
-           printf("sem_timedwait() timed out\n");
-       else
-           perror("sem_timedwait");
-   } else
-       printf("sem_timedwait() succeeded\n");
-
-   exit((s == 0) ? EXIT_SUCCESS : EXIT_FAILURE);
-}
-
