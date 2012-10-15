@@ -34,4 +34,4 @@ ex5:
 	make exSemaphore
 exSemaphore:
 	# Compile dans le dossier bin.
-	cd bin ; gcc -o exSemaphore ../sources/ex5Semaphore.c ; chmod +x exSystem 
+	cd bin ; gcc -o exSemaphore ../sources/ex5Semaphore.c ; chmod +x exSemaphore 
