@@ -24,3 +24,5 @@ int main ()
 	printf("Chaque processus est independant. Si on ne change rien le fils partage le code source du processus pere.\n\n");
 
 }
+
+
